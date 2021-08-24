@@ -1,35 +1,35 @@
-from lxml import html
-from flask import Flask, request
 import os
+from typing import Union
 
-from requests import Response as RequestReponse # there a flask.Response class we may need later
+from flask import Flask, request
+from loguru import logger
+from lxml import html
 import requests
 
+import intervention
+from intervention.handlers.abstract import AbstractHandler
+from shim.rewriter import with_proxied_links
+
 app = Flask(__name__)
+app.logger = logger
 
-SHIM_ROOT = os.environ.get("SHIM_ROOT", 'http://127.0.0.1:5000/')
 
-def with_proxied_navigation(html_as_str, url):
+def proxied_response(url: str) -> (str):
     """
-    Prefix all <a> href= links with with our proxy url
-    to sustain the shim.
+    Get the response from destination url, redirect the navigation and assets
+    through this server and munge in the additional bits we want (where a handler has
+    been defined) before returning html.
     """
-    url_root = "/".join(url.split("/")[:3])
-    html_as_str = html_as_str.replace('href="/', f'href="{SHIM_ROOT}?url={url_root}/')
-    return html_as_str
-
-def proxied_response(url: str):
-    """
-    Get the response from from destination url, and munge in
-    the additional bits we want. 
-    """
-    r: RequestReponse
-
-    r = requests.get(url)
+    r: requests.Response = requests.get(url)
     if not r.ok:
         raise Exception(f'Failed to get url, {url} with status code {r.status_code}')
 
-    content = html.document_fromstring(with_proxied_navigation(r.text, url))
+    content: html.HtmlElement = html.document_fromstring(r.text)
+    content = with_proxied_links(url, content)
+
+    handler: Union[AbstractHandler, None] = intervention.get_handler(url)
+    if handler:
+        content = handler.handle(content)
 
     return html.tostring(content)
 
@@ -41,4 +41,4 @@ def proxy():
     return proxied_response(url)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
