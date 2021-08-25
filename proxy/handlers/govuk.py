@@ -1,8 +1,6 @@
 from handlers.abstract import AbstractHandler
 from lxml.html import HtmlElement
 
-GOVUK = "https://www.gov.uk"
-
 class GovUKHandler(AbstractHandler):
     """
     handles urls beginning: https://www.gov.uk
