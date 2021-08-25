@@ -6,9 +6,8 @@ from loguru import logger
 from lxml import html
 import requests
 
-import intervention
-from intervention.handlers.abstract import AbstractHandler
-from shim.rewriter import with_proxied_links
+from handlers.abstract import AbstractHandler
+from handlers.all import get_handler
 
 app = Flask(__name__)
 app.logger = logger
@@ -20,25 +19,34 @@ def proxied_response(url: str) -> (str):
     through this server and munge in the additional bits we want (where a handler has
     been defined) before returning html.
     """
-    r: requests.Response = requests.get(url)
+    content: html.HtmlElement
+    r: requests.Response
+
+    r = requests.get(url)
     if not r.ok:
-        raise Exception(f'Failed to get url, {url} with status code {r.status_code}')
+        raise Exception(f"Failed to get url, {url} with status code {r.status_code}")
 
-    content: html.HtmlElement = html.document_fromstring(r.text)
-    content = with_proxied_links(url, content)
+    content = html.document_fromstring(r.text)
 
-    handler: Union[AbstractHandler, None] = intervention.get_handler(url)
+    handler: Union[AbstractHandler, None] = get_handler(url)
+
     if handler:
-        content = handler.handle(content)
+        content = handler.proxy_site(content)
+        content = handler.proxy_page(content)
+
+    else:
+        return "No proxy handling for url: {url}", 404
 
     return html.tostring(content)
 
-@app.route('/')
+
+@app.route("/")
 def proxy():
     url = request.args.get("url", None)
     if not url:
-        return 'Invalid request. You need to include a url parameter.', 400
+        return "Invalid request. You need to include a url parameter.", 400
     return proxied_response(url)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
