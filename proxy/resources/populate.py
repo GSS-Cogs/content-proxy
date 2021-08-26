@@ -1,5 +1,5 @@
 
-""" The script that does the actual piopulating of resources the proxy is aware of """
+""" The script that does the actual populating of resources the proxy is aware of """
 
 from mapper import ResourceMapper
 
