@@ -17,7 +17,7 @@ def proxied_response(url: str) -> (str):
     """
     Get the response from destination url, redirect the navigation and assets
     through this server and munge in the additional bits we want (where a handler has
-    been defined) before returning html.
+    been defined) before returning the html str.
     """
     content: html.HtmlElement
     r: requests.Response

@@ -79,7 +79,8 @@ class Proxier:
 
     def relative_to_absolute(self, element: html.HtmlElement, attribute: str) -> (html.HtmlElement):
         """
-        Updates a relative href attribute of an element to be an absolute path.
+        Updates a attribute of an element to be an absolute path where that attributes
+        value starts with "/".
         """
         return self.rewriter.modify.attribute(
             element,
@@ -89,8 +90,8 @@ class Proxier:
 
     def relative_to_absolute_proxied(self, element: html.HtmlElement, attribute: str) -> (html.HtmlElement):
         """
-        Updates a relative href attribute of an element to be an absolute path
-        routed via this server.
+        Updates a attribute of an element to be an absolute path proxied through this
+        server where that attributes value starts with "/".
         """
         return self.rewriter.modify.attribute(
             element,
