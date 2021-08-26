@@ -26,7 +26,7 @@ class BaseDataLayer(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def find_map_from_landing_page(self, url: str) -> (Union[ResourceMapped, None]):
+    def get_mapped_resource_from_landing_page(self, url: str) -> (Union[ResourceMapped, None]):
         """
         Given a url, return an (additional, from us) mapped resource
         to be inserted or none.

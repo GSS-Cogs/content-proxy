@@ -35,11 +35,11 @@ class JsonDatabase(BaseDataLayer):
         else:
             db_json = {}
 
-        db_json[mapped_object.landing_page] = mapped_object.csvw
+        db_json[mapped_object.landing_page] = {"csvw": mapped_object.csvw}
         with open(Path(this_dir / "db.json"), "w") as f:
             json.dump(db_json, f)
 
-    def find_map_from_landing_page(self, url: str) -> (Union[ResourceMapped, None]):
+    def get_mapped_resource_from_landing_page(self, url: str) -> (Union[ResourceMapped, None]):
         """
         Given a url, return an (additional, from us) mapped resource
         to be inserted or none.
@@ -51,5 +51,15 @@ class JsonDatabase(BaseDataLayer):
             with open(db_path) as f:
                 self.db = json.load(f)
 
-        resource_mapped = self.db.get(url, None)
-        raise resource_mapped
+        resource_mapped_value = self.db.get(url, None)
+        if not resource_mapped_value:
+            return None
+
+        # Avoid confusion if/when we extend the fields we're tracking
+        # beyond just the associated csvw
+        assert len(resource_mapped_value) == 1
+
+        return ResourceMapped(
+            csvw = resource_mapped_value["csvw"],
+            landing_page = url
+        )

@@ -1,9 +1,9 @@
 import requests
 from rdflib import Graph, Dataset
 
-from database.models import ResourceMapped
-from getter.abstract import BaseLinkObjectsGetter
-from getter.models import LinkObject
+from .database.models import ResourceMapped
+from .getter.abstract import BaseLinkObjectsGetter
+from .getter.models import LinkObject
 
 
 class ResourceMapper:

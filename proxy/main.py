@@ -32,7 +32,7 @@ def proxied_response(url: str) -> (str):
 
     if handler:
         content = handler.proxy_site(content)
-        content = handler.proxy_page(content)
+        content = handler.proxy_page(content, url)
 
     else:
         return "No proxy handling for url: {url}", 404

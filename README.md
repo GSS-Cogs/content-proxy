@@ -26,6 +26,14 @@ Example:
 So _all_ gov.uk pages matching the url `https://www.gov.uk` apply (a) but **only** urls matching `https://www.gov.uk/government/statistics` _then_ also apply (b).
 
 
-# CI
+# Resources
 
-TODO: it'll be cloudrun and actions, trigger on merge to master
+If you run the following:
+
+```
+pipenv run python3 ./populate.py
+```
+
+It will populate the database to associate a given landing page with resources we have created with/from that landing page (i.e find the csvw if one needs inserting).
+
+_Note: at time of writing, this is stubbed functionality. See the declared `linked_object_getter` see https://github.com/GSS-Cogs/content-proxy/resources.drivers.py to see if this has changed._
