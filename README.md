@@ -1,6 +1,6 @@
 # Content Proxy
 
-A proxy server to allow navigation and interactions with foreign web assets, supports targetted content insertion into proxied response.
+A proxy server to allow navigation and interactions with foreign web assets, supports content insertion into proxied response.
 
 # Usage
 
