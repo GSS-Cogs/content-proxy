@@ -36,4 +36,4 @@ pipenv run python3 ./populate.py
 
 It will populate the database to associate a given landing page with resources we have created with/from that landing page (i.e find the csvw if one needs inserting).
 
-_Note: at time of writing, this is stubbed functionality. See the declared `linked_object_getter`, see https://github.com/GSS-Cogs/content-proxy/resources.drivers.py to see if this has changed._
+_Note: at time of writing, this is stubbed functionality. See the declared `linked_object_getter`, see https://github.com/GSS-Cogs/content-proxy/proxy/drivers.py to see if this has changed._
