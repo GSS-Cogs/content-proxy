@@ -1,43 +1,28 @@
-import os
 from typing import Union
 
 from flask import Flask, request
 from loguru import logger
-from lxml import html
-import requests
 
-from handlers.abstract import AbstractHandler
+from handlers.abstract import BaseHtmlHandler, BaseApiHandler
 from handlers.all import get_handler
 
 app = Flask(__name__)
-app.logger = logger
-
 
 def proxied_response(url: str) -> (str):
     """
     Get the response from destination url, redirect the navigation and assets
     through this server and munge in the additional bits we want (where a handler has
-    been defined) before returning the html str.
+    been defined) before returning either:
+    
+    (a) a html str where it's a proxied web page.
+    (b) a dict where its a proxied json response.
     """
-    content: html.HtmlElement
-    r: requests.Response
-
-    r = requests.get(url)
-    if not r.ok:
-        raise Exception(f"Failed to get url, {url} with status code {r.status_code}")
-
-    content = html.document_fromstring(r.text)
-
-    handler: Union[AbstractHandler, None] = get_handler(url)
-
+    handler: Union[BaseHtmlHandler, BaseApiHandler, None] = get_handler(url)
+    handler.logger = logger
     if handler:
-        content = handler.proxy_site(content)
-        content = handler.proxy_page(content, url)
-
+        return handler.handle()
     else:
         return "No proxy handling for url: {url}", 404
-
-    return html.tostring(content)
 
 
 @app.route("/")
